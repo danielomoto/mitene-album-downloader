@@ -1,0 +1,109 @@
+html, body {
+	display: flex;
+	justify-content: center;
+	font-family: Roboto, Arial, sans-serif;
+	font-size: 11px;
+}
+form {
+	border: 5px solid #f1f1f1;
+}
+input[type=text], input[type=password] {
+	width: 100%;
+	padding: 4px 4px;
+	margin: 4px 0;
+	display: inline-block;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+}
+.stop-button {
+	background-color: #EE4B2B;
+	color: white;
+	padding: 7px 0;
+	margin: 10px 0;
+	border: none;
+	width: 48%;
+	display: none;
+	float: left;
+}
+.download-button {
+	background-color: #8ebf42;
+	color: white;
+	padding: 7px 0;
+	margin: 10px 0;
+	border: none;
+	width: 48%;
+	float: left;
+}
+.save-button {
+	background-color: #33AAFF;
+	color: white;
+	padding: 7px 0;
+	margin: 10px 0;
+	border: none;
+	width: 48%; 
+	float: left;
+}
+.close-button {
+	background-color: #b3b3b3;
+	color: white;
+	padding: 7px 0;
+	margin: 10px 0;
+	border: none;
+	width: 48%; 
+	float: left;
+	margin-left: 10px;
+}
+.show-button {
+	background-color: #b3b3b3;
+	color: white;
+	padding: 7px 0;
+	margin: 10px 0;
+	border: none;
+	width: 48%; 
+	float: left;
+	margin-left: 10px;
+}
+.help-div {
+	display: none;
+    color: #43A6C6;
+}
+.fa-question-circle {
+  color: #43A6C6;
+  cursor: help;
+  padding: 3px;
+}
+textarea {
+	width: 100%
+}
+h1 {
+	text-align: center;
+	fone-size: 16;
+}
+.warning {
+	text-align: center;
+	fone-size: 16;
+	color: #FF5733;
+	display: none;
+}
+button:hover {
+	opacity: 0.8;
+}
+.formcontainer {
+	text-align: left;
+	margin: 24px 48px 12px;
+}
+.container {
+	padding: 8px 0;
+	text-align:left;
+}
+span.psw {
+	float: right;
+	padding-top: 0;
+	padding-right: 15px;
+}
+/* Change styles for span on extra small screens */
+@media screen and (max-width: 300px) {
+span.psw {
+	display: block;
+	float: none;
+}

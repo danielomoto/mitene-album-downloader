@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mitene Album Downloader</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <div id='downloader-div' style="width:450px;">
+		<h1>Mitene Album Downloader</h1>
+		<div id="show-warning-close" class="warning"><h3>Warning: Keep this popup open or the downloads will stop!</h3></div>
+		<div class="formcontainer">
+			<hr/>
+			<div class="container">
+				<label for="end-image"><strong>Ending Image (optional)</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="end-image-help"></i>
+				<div id="end-image-help-div" class="help-div">
+					The extension will stop when it reaches this id (e.g. 05D79C5D-4C9B-4C86-8122-24C7389FC66A).  The ending id will not be downloaded.
+				</div>
+				<input type="text" placeholder="Ending Image" id="end-image">
+			</div>
+			<hr/>
+			<div class="container">
+				<label for="status"><strong>Log</strong></label>
+				<br/>
+				<textarea id="status" rows="10" class="textarea" disabled="disabled"></textarea>
+			</div>
+			<hr/>
+			<div class="container">
+				<button type="button" id="download" class="download-button">Download</button>
+				<button type="button" id="pause" class="stop-button">Pause</button>
+				<button type="button" id="properties" class="show-button">Properties</button>
+			</div>
+		</div>
+	</div>
+	
+    <div id='properties-div' style="display: none;  width:450px;">
+		<h1>Mitene Album Downloader Optional Properties</h1>
+		<div class="formcontainer">
+			<hr/>
+			<div class="container">
+				<label for="total-num-of-images-downloaded"><strong>Total # of Downloaded Images</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="total-num-of-images-downloaded-help"></i>
+				<div id="total-num-of-images-downloaded-help-div" class="help-div">
+					The number of images downloaded since you installed this extension.  Useful if Chrome crashed and you need to continue where you left off.  
+				</div>
+				<input type="text" placeholder="" id="total-num-of-images-downloaded" value="0">
+				
+				<label for="url-of-last-page"><strong>URL to use if continuing from last iteration</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="url-of-last-page-help"></i>
+				<div id="url-of-last-page-help-div" class="help-div">
+					A url obtained by dividng the total # of images downloaded by the # of thumbnails on each page.  You can skip to that exact page by appending ?page=X onto the url.  If this url is wrong (due to duplicate downloads, etc), you can also just see how many images are in the download folder and use that to get a more accurate # for the url.
+				</div>
+				<div id="url-of-last-page"></div>
+				
+				<label for="last-processed-image"><strong>Last Processed Image</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="last-processed-image-help"></i>
+				<div id="last-processed-image-help-div" class="help-div">
+					The last image id processed.  Useful if Chrome crashed and happens and you need to continue where you left off.  You can set the starting image id to this image id.
+				</div>
+				<input disabled="disabled" type="text" placeholder="" id="last-processed-image">
+			</div>
+			<hr/>
+			<div class="container">
+				<label for="start-image"><strong>Starting Image</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="start-image-help"></i>
+				<div id="start-image-help-div" class="help-div">
+					The extension will start downloading when it reaches this id (e.g. 05D79C5D-4C9B-4C86-8122-24C7389FC66A).  The starting id will be downloaded.
+				</div>
+				<input type="text" placeholder="" id="start-image">
+				
+				<label for="random-sleep"><strong>Random # of seconds to sleep between downloads</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="random-sleep-help"></i>
+				<div id="random-sleep-help-div" class="help-div">
+					The extension will sleep for a random number of seconds denoted by [min sleep amount]-[max sleep amount] (e.g. 2-5).  This is to mimic a human being downloading the images.
+				</div>
+				<input type="text" placeholder="" id="random-sleep" value="2-5">
+				
+				<label for="max-retries"><strong>How Many Retries Before Failing</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="max-retries-help"></i>
+				<div id="max-retries-help-div" class="help-div">
+					The extension will retry a wait condition this many times before giving up and throwing an error.  Each iteration is followed by a 2 second sleep, so retrying 20 times will equal waiting 40 seconds.
+				</div>
+				<input type="text" placeholder="" id="max-retries" value="20">
+				
+				<label for="max-pages-to-process"><strong>Maximum # of Pages to Process</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="max-pages-to-process-help"></i>
+				<div id="max-pages-to-process-help-div" class="help-div">
+					The extension will process this many pages before terminating.  Skipped pages are not counted in the calculation.  If you don't want a maximum, set the value to 0.
+				</div>
+				<input type="text" placeholder="" id="max-pages-to-process" value="10">
+				
+				<label for="max-images-to-process"><strong>Maximum # of Images to Process</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="max-images-to-process-help"></i>
+				<div id="max-images-to-process-help-div" class="help-div">
+					The extension will process this many images before terminating.  Skipped or already downloaded images are not counted in the calculation.  If you don't want a maximum, set the value to 0.
+				</div>
+				<input type="text" placeholder="" id="max-images-to-process" value="250">
+				
+				<label for="max-num-ids-to-save-in-history"><strong>Maximum # of entries in History</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="max-num-ids-to-save-in-history-help"></i>
+				<div id="max-num-ids-to-save-in-history-help-div" class="help-div">
+					The extension will save this many ids in the download history before popping the oldest one off.  A big number may affect performance and is not recommended.  If you don't want a history, set the value to 0.
+				</div>
+				<input type="text" placeholder="" id="max-num-ids-to-save-in-history" value="250">
+				
+				<label for="max-num-ids-to-save-in-log"><strong>Maximum # of entries in Log</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="max-num-ids-to-save-in-log-help"></i>
+				<div id="max-num-ids-to-save-in-log-help-div" class="help-div">
+					The extension will push this many lines into the log before popping the oldest one off.  A big number may affect performance and is not recommended.  If you don't want a log, set the value to 0.
+				</div>
+				<input type="text" placeholder="" id="max-num-ids-to-save-in-log" value="250">
+				
+				<label for="max-num-of-downloads-to-look-at-chrome"><strong>Maximum # of entries in Chrome's download history to look at</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="max-num-of-downloads-to-look-at-chrome-help"></i>
+				<div id="max-num-of-downloads-to-look-at-chrome-help-div" class="help-div">
+					The number of download entries in the Chrome's download history to fetch when verifying the download is complete.
+				</div>
+				<input type="text" placeholder="" id="max-num-of-downloads-to-look-at-chrome" value="10">
+				
+				<label for="update-start-end-image"><strong>Update Starting and Ending Image Ids?</strong></label>
+				<input type="checkbox" placeholder="" id="update-start-end-image" checked="checked"> <i class="fa fa-question-circle" aria-hidden="true" id="update-start-end-image-help"></i>
+				<div id="update-start-end-image-help-div" class="help-div">
+					Tells the extension to update the start and end image or not after a successful run.  Unsuccessful runs never update the end image id, but will update the start image id.  If the start image id is not updated, the next run will skip images/pages till it finds it, which is probably not what you wanted.
+				</div>
+				<br/>
+				<label for="do-not-fail-on-download-verification"><strong>Continue even if download can't be verified?</strong></label>
+				<input type="checkbox" placeholder="" id="do-not-fail-on-download-verification" checked="checked"> <i class="fa fa-question-circle" aria-hidden="true" id="do-not-fail-on-download-verification-help"></i>
+				<div id="do-not-fail-on-download-verification-help-div" class="help-div">
+					Tells the extension to continue downloading even when it couldn't verify the image/video is in the download history.
+				</div>
+			</div>
+			<hr/>
+			<div class="container">
+				<label for="downloaded-images"><strong>History</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="downloaded-images-help"></i>
+				<div id="downloaded-images-help-div" class="help-div">
+					The extension will skip any id in this list.  Entries must be separated by new line.
+				</div>
+				<br/>
+				<textarea id="downloaded-images" rows="10" class="textarea"></textarea>
+			</div>
+			<hr/>
+			<div class="container">
+				<button type="button" id="save" class="save-button">Save</button>
+				<button type="button" id="close" class="close-button">Close</button>
+			</div>
+		</div>
+	</div>
+	<script src="content.js"></script>
+  </body>
+</html>
