@@ -500,7 +500,7 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 				var found = false;
 				var search = id;
 				
-				for(var j = 0; j < 2 && !found; j++) {
+				for(var j = 0; j < data[ID_MAX_RETRIES] && !found; j++) {
 					var overlayValue = getCurrentOverlayValue();
 					console.log(LOG_CURRENT_OVERLAY(overlayValue));
 					if(overlayValue == null) {
@@ -533,7 +533,7 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 				console.log(LOG_SEARCHING_FOR(search));
 				var found = false;
 				var numberOfDownloadsToLookAt = parseInt(data[ID_MAX_NUM_OF_DOWNLOADS_TO_LOOK_AT]);
-				for(var j = 0; j < 10 && !found; j++) {
+				for(var j = 0; j < data[ID_MAX_RETRIES] && !found; j++) {
 					var ret = await chrome.runtime.sendMessage({MSG_FIND_DOWNLOAD: { name: search, numberOfDownloadsToLookAt: numberOfDownloadsToLookAt }});
 					found = ret.found;
 				
@@ -567,7 +567,7 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 				
 				// Let"s continue waiting 20 seconds for the new thumbnails to load, but give up after that.
 				var error = true;
-				for(var j = 0; j < 10; j++) {
+				for(var j = 0; j < data[ID_MAX_RETRIES]; j++) {
 					var ids2 = getImageIds();
 					if(ids.length === ids2.length && ids.every(function(value, index) { return value === ids2[index]})) {
 						console.log(LOG_IDS_ARE_SAME);
@@ -598,7 +598,7 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 				
 				for (var i = 0; i < containers.length; i++) {
 					var id = ids[i];
-					if(data[[ID_END_IMAGE]] != "" && id == data[[ID_END_IMAGE]]) {
+					if(data[ID_END_IMAGE] != "" && id == data[ID_END_IMAGE]) {
 						console.log(LOG_FOUND_END_IMAGE);
 						return;
 					}
