@@ -154,6 +154,7 @@ function getPopupData() {
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i]
 		if(id == ID_URL_OF_LAST_PAGE) {
+			// This is just a div, so get the innerHtml
 			data[ids[i]] = document.getElementById(id).innerHTML;
 		} else if(id == ID_UPDATE_START_END_IMAGE || id == ID_DO_NOT_FAIL_ON_DOWNLOAD_VERIFICATION) {
 			data[ids[i]] = document.getElementById(id).checked;
@@ -187,6 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				var id = ids[i];
 				if(result[id] != undefined) {
 					if(id == ID_URL_OF_LAST_PAGE) {
+						// This is just a div, so set the innerHtml
 						document.getElementById(id).innerHTML = result[id];
 					} else if(id == ID_UPDATE_START_END_IMAGE || id == ID_DO_NOT_FAIL_ON_DOWNLOAD_VERIFICATION) {
 						document.getElementById(id).checked = result[id];
@@ -480,6 +482,9 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 				} else if(containers2.length > 1) {
 					throw new Error(ERROR_TOO_MANY_MEDIA_CONTAINERS);
 				} else {
+					// Video's don't have the image id in the overlay html.
+					// However, the blob url does change on every overlay refresh, so check that
+					// instead.
 					var videoRegex = /blob:https:\/\/mitene.us\/([\w-]*)/g;
 					var imageRegex = /smartphone\/([\w-]*)/g;
 					var video = containers2[0].innerHTML.match(videoRegex);
@@ -500,6 +505,8 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 				var found = false;
 				var search = id;
 				
+				// Since we don't get rid of the overlay during each iteration, check to see 
+				// if the overlay has our current image id in it.  Otherwise, we're not ready yet.
 				for(var j = 0; j < data[ID_MAX_RETRIES] && !found; j++) {
 					var overlayValue = getCurrentOverlayValue();
 					console.log(LOG_CURRENT_OVERLAY(overlayValue));
@@ -534,9 +541,11 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 				var found = false;
 				var numberOfDownloadsToLookAt = parseInt(data[ID_MAX_NUM_OF_DOWNLOADS_TO_LOOK_AT]);
 				for(var j = 0; j < data[ID_MAX_RETRIES] && !found; j++) {
+					// See if the download exists in the downloads
 					var ret = await chrome.runtime.sendMessage({MSG_FIND_DOWNLOAD: { name: search, numberOfDownloadsToLookAt: numberOfDownloadsToLookAt }});
 					found = ret.found;
 				
+					// If not, wait again or stop
 					if(!found) {
 						console.log(LOG_NOT_FOUND);
 						await new Promise(r => setTimeout(r, 2000));
@@ -546,6 +555,9 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 					}
 				}
 				
+				// Since it seems like it can't find the photo/video often, let's give the user the option
+				// to continue if they want to.  It may have to do with timing or the fact that I have the
+				// window in the background and are doing other stuff while the downloads are happenning.
 				if(found) {
 					await chrome.runtime.sendMessage({MSG_ADD_LOG: LOG_DOWNLOADED(id)});
 				} else {
@@ -598,11 +610,13 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 				
 				for (var i = 0; i < containers.length; i++) {
 					var id = ids[i];
+					// Check end iamge
 					if(data[ID_END_IMAGE] != "" && id == data[ID_END_IMAGE]) {
 						console.log(LOG_FOUND_END_IMAGE);
 						return;
 					}
 					
+					// Check start image.
 					if(startingImage != "") {
 						if(id == startingImage) {
 							startingImage = "";
@@ -617,6 +631,7 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 						continue;
 					}
 					
+					// Click the thhumbnail and wait for the overlay to popup with the download button.
 					var overlayValue = getCurrentOverlayValue();
 					console.log(LOG_STARTING_OVERLAY(overlayValue));
 					console.log(LOG_CLICKING_THUMBNAIL(id));
@@ -631,14 +646,17 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 					
 					await waitForDownload(id, data);
 				
+					// Update the last popup UI with various data about the last processed image.
 					await chrome.runtime.sendMessage({MSG_UPDATE_LAST_PROCESSED_IMAGE: { id: id, numOfThumbnailsPerPage: ids.length, url: data[TAB_URL] }});
 					
+					// Increment the number of images processed and stop if we've reached the max.
 					numOfImages++;
 					if(numOfImages > maxNumOfImages && maxNumOfImages != 0) {
 						console.log(LOG_MAX_IMAGES_REACHED);
 						break;
 					}
 					
+					// To mimic a human, sleep a random amount of time.
 					if(randomSleep != 0) {
 						var sleep = Math.floor(Math.random() * sleepTo) + sleepFrom;
 						console.log(LOG_SLEEPING_FOR(sleep));
@@ -685,6 +703,7 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 				var maxNumOfImages = parseInt(data[ID_MAX_IMAGES_TO_PROCESS]);
 				var startingImage = data[ID_START_IMAGE];
 				while(true)  {
+					// Get current set of image ids.
 					var ids = getImageIds();
 					console.log(LOG_IDS(ids));
 					
@@ -693,12 +712,13 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 						firstImage = ids[0];
 					}
 					
+					// See if we've defined a start image and determine if we should skip this page
 					if(startingImage != "") {
 						if(ids.includes(startingImage)) {
 							await processThumbnails(ids, data, entries, numOfImages, startingImage);
 							startingImage = "";
 							numOfImages += getNumOfImagesProcessed(ids, startingImage, endingImage);
-							// We need to reset the start image or the next run will skip a bunch of things.
+							// We need to reset the start image or the next run will skip a bunch of things the next time we start up the extension.
 							if(data[ID_UPDATE_START_END_IMAGE] == true) {
 								await chrome.runtime.sendMessage({MSG_UPDATE_START_END_IMAGE: { startImage: "" }});
 							}
@@ -775,6 +795,7 @@ function updateStorage(data) {
 	for(var i = 0; i < data.length; i++) {
 		chrome.storage.local.set(obj);
 		if(data[i][0] == ID_URL_OF_LAST_PAGE) {
+			// This is just a div, so set the innerHtml
 			document.getElementById(data[i][0]).innerHTML = data[i][1];
 		} else {
 			document.getElementById(data[i][0]).value = data[i][1];
@@ -859,6 +880,9 @@ function updateDownloadHistory(lastProcessedImage) {
  */
 function updateLastUrl(numOfImages, lastProcessedImage) {
 	console.log(LOG_UPDATING_LAST_URL);
+	// Let's determine the page to skip to if you want to continue where you last left off.
+	// We can do this by dividing the numbe of thumbnails on each page by the total nubmer
+	// of iamges we've downloaded.
 	var page = Math.floor(numOfImages / lastProcessedImage.numOfThumbnailsPerPage);
 	var components = lastProcessedImage.url.split('?');
 	var url = components[0];
@@ -953,6 +977,7 @@ chrome.runtime.onMessage.addListener(
 		
 		var updateStartEnd = request[MSG_UPDATE_START_END_IMAGE];
 		if(updateStartEnd) {
+			// Not every request updates both entries, so check which one is defined.
 			if(updateStartEnd.endImage != null) {
 				updateStorage([[ID_END_IMAGE, updateStartEnd.endImage]]);
 			}
