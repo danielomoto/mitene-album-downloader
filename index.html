@@ -53,7 +53,7 @@
 				
 				<label for="last-processed-image"><strong>Last Processed Image</strong></label> <i class="fa fa-question-circle" aria-hidden="true" id="last-processed-image-help"></i>
 				<div id="last-processed-image-help-div" class="help-div">
-					The last image id processed.  Useful if Chrome crashed and happens and you need to continue where you left off.  You can set the starting image id to this image id.
+					The last image id processed.  Useful if Chrome crashed and you need to continue where you left off.  You can set the starting image id to this image id.
 				</div>
 				<input disabled="disabled" type="text" placeholder="" id="last-processed-image">
 			</div>
@@ -110,7 +110,7 @@
 				<label for="update-start-end-image"><strong>Update Starting and Ending Image Ids?</strong></label>
 				<input type="checkbox" placeholder="" id="update-start-end-image" checked="checked"> <i class="fa fa-question-circle" aria-hidden="true" id="update-start-end-image-help"></i>
 				<div id="update-start-end-image-help-div" class="help-div">
-					Tells the extension to update the start and end image or not after a successful run.  Unsuccessful runs never update the end image id, but will update the start image id.  If the start image id is not updated, the next run will skip images/pages till it finds it, which is probably not what you wanted.
+					Tells the extension to update the start and end image id after a successful run.  Unsuccessful runs never update the end image id, but will update the start image id.  If the start image id is not updated, the next run will skip images/pages till it finds it, which is probably not what you wanted.
 				</div>
 				<br/>
 				<label for="do-not-fail-on-download-verification"><strong>Continue even if download can't be verified?</strong></label>
