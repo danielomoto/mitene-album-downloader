@@ -375,7 +375,7 @@ document.getElementById(ID_URL_OF_LAST_PAGE_HELP).addEventListener("click", () =
  */
 document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tab = tabs[0];
+		const tab = tabs[0];
 		if(!tab.url.includes(TAB_URL_SEARCH)) {
 			console.log(ERROR_TAB_URL);
 			alert(ERROR_TAB_URL);
@@ -393,7 +393,7 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 		data[TAB_URL] = tab.url;
 		
 		document.getElementById(ID_SHOW_WARNING_CLOSE).style.display = "block";
-        async function downloadContent(
+		async function downloadContent(
 			data
 		) {
 			const ID_MEDIA_IMG="media-img";
@@ -776,15 +776,15 @@ document.getElementById(ID_DOWNLOAD_BUTTON).addEventListener("click", () => {
 			}
 			
 			await chrome.runtime.sendMessage({MSG_HIDE_WARNING: true});
-        };
+		};
 
 		// Inject the function into the mitene tab so we can process the DOM.
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: downloadContent,
+		chrome.scripting.executeScript({
+			target: { tabId: tab.id },
+			func: downloadContent,
 			args: [data]
-        });
-    });
+		});
+	});
 });
 
 /**
